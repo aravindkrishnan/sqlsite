@@ -15,6 +15,20 @@ class DashboardsController < ApplicationController
   # GET /dashboards/1.json
   def show
     @dashboard = current_user.dashboard
+    @db_tables=UserDatabase::ReadDb.new(@dashboard.db_name)
+    @tables=@db_tables.get_tables
+
+    @tab_hash=Hash.new
+    @tables.each do |table|
+       col=  @db_tables.get_columns(table.first)
+       @arr=Hash.new
+       col.each do |c|
+         @arr[c[0]]=c[1]
+       end
+    @tab_hash[table.first]=@arr
+    end
+    pp @tab_hash
+
      respond_to do |format|
       format.html # show.html.erb
       format.json { render :json=> @dashboard }
@@ -40,15 +54,25 @@ class DashboardsController < ApplicationController
   # POST /dashboards
   # POST /dashboards.json
   def create
-    @dashboard = Dashboard.new(params[:dashboard])
-    @dashboard.user=current_user
-    respond_to do |format|
-      if @dashboard.save
-        format.html { redirect_to @dashboard, :notice=> 'Dashboard was successfully created.' }
-        format.json { render :json=> @dashboard, :status=> :created, :location=> @dashboard }
-      else
-        format.html { render :action=> "new" }
-        format.json { render :json=> @dashboard.errors, :status=> :unprocessable_entity }
+    if current_user.dashboard.nil?
+      @dashboard = Dashboard.new(params[:dashboard])
+      @dashboard.user=current_user
+      respond_to do |format|
+        if @dashboard.save
+          @db=UserDatabase::CreateDb.new(@dashboard.db_name)
+          @db.create
+
+          format.html { redirect_to @dashboard, :notice=> 'Database created.' }
+          format.json { render :json=> @dashboard, :status=> :created, :location=> @dashboard }
+        else
+          format.html { render :action=> "new" }
+          format.json { render :json=> @dashboard.errors, :status=> :unprocessable_entity }
+        end
+      end
+    else
+      respond_to do |format|
+          format.html { render :action=> "new" }
+          format.json { render :json=> @dashboard.errors, :status=> :unprocessable_entity }
       end
     end
   end

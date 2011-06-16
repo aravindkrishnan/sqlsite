@@ -1,9 +1,25 @@
+<% content_for :custom_scripts do %>
+<script type="text/javascript">
+
+
+</script>
+<% end %>
+
 <p id="notice"><%= notice %></p>
 
 <p>
   <b>Db name:</b>
   <%= @dashboard.db_name %>
 </p>
+
+<h3>Tables</h3>
+<% @tab_hash.each do |table,columns| %>
+  <ul><h4><%= table %></h4>
+    <% columns.each do |column,value| %>
+       <li><%= column %>&nbsp;(&nbsp;<%= value %>&nbsp;)</li>
+    <% end %>
+  </ul>
+<% end %>
 
 
 <%= link_to 'Edit', edit_dashboard_path(@dashboard) %> |
