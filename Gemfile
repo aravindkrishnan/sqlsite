@@ -20,6 +20,7 @@ gem 'authlogic','3.0.3'
 gem 'json'
 gem "easy_roles", "~> 1.1.0"
 gem "ruby-recaptcha",'1.0.3'
+gem 'mongrel'
 
 
 # Use unicorn as the web server

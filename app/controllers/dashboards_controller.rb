@@ -22,12 +22,13 @@ class DashboardsController < ApplicationController
     @tables.each do |table|
        col=  @db_tables.get_columns(table.first)
        @arr=Hash.new
-       col.each do |c|
-         @arr[c[0]]=c[1]
+       col.each_with_index do |c,index|
+         @ah=Hash.new
+         @ah[c[0]]=c[1]
+         @arr[index]=@ah
        end
     @tab_hash[table.first]=@arr
     end
-    pp @tab_hash
 
      respond_to do |format|
       format.html # show.html.erb
@@ -103,5 +104,16 @@ class DashboardsController < ApplicationController
       format.html { redirect_to dashboards_url }
       format.json { head :ok }
     end
+  end
+
+
+  def query
+    db= params[:db]
+    table= params[:table]
+    @dashboard = current_user.dashboard
+    @db_tables=UserDatabase::ReadDb.new(@dashboard.db_name)
+    @out= @db_tables.show_data(table,100,0)
+
+    render :partial=> 'table'
   end
 end

@@ -1,8 +1,6 @@
 <% content_for :custom_scripts do %>
-<script type="text/javascript">
 
 
-</script>
 <% end %>
 
 <p id="notice"><%= notice %></p>
@@ -14,9 +12,14 @@
 
 <h3>Tables</h3>
 <% @tab_hash.each do |table,columns| %>
-  <ul><h4><%= table %></h4>
-    <% columns.each do |column,value| %>
-       <li><%= column %>&nbsp;(&nbsp;<%= value %>&nbsp;)</li>
+  <ul><%= link_to table,"/dashboards/query/#{@dashboard.db_name}/#{table}" ,:remote=>true,:class=>"table_name",:id=>table %>
+     <img src="../assets/loading.gif" alt="alternative text" width='24px' height='24px' id="refresh_<%= table%>" />
+    <% columns.each do |key,value| %>
+        <%   value.each do |k,v| %>
+            <li><%= k %>&nbsp;(&nbsp;<%= v %>&nbsp;)</li>
+        <% end %>
+
+
     <% end %>
   </ul>
 <% end %>
@@ -24,3 +27,51 @@
 
 <%= link_to 'Edit', edit_dashboard_path(@dashboard) %> |
 <%= link_to 'Back', dashboards_path %>
+
+
+<div id='dataTables'>
+
+    <% @tab_hash.each do |table,columns| %>
+    <a href="#" id='<%=table %>_a'>Refresh</a>
+    <table id='<%=table %>_table'>
+        <tr>
+         <% columns.each do |column,value| %>
+              <%   value.each do |k,v| %>
+                    <th><%=k %></th>
+              <% end %>
+         <% end %>
+        </tr>
+    </table>
+  <br/><br/><br/><br/>
+    <% end %>
+
+
+
+</div>
+
+
+
+<%= javascript_tag do %>
+
+  <% @tab_hash.each do |taber,cols| %>
+   $("img#refresh_<%=taber %>").hide();
+   $("a#<%=taber %>_a").hide();
+   $("#<%=taber %>_table").hide();
+   $("a#<%=taber %>").bind("ajax:before", function(et, e){
+     if( $("a#<%=taber %>_a").is(":visible") ) {
+         return false;
+        }
+      else
+         $("img#refresh_<%=taber %>").show();
+
+   });
+
+
+   $("a#<%=taber %>").bind("ajax:complete", function(et, e){
+    $("#<%=taber %>_table").append(e.responseText); // insert content
+     $("img#refresh_<%=taber %>").hide();
+    $("a#<%=taber %>_a").show();
+    $("#<%=taber %>_table").show();
+  });
+ <% end %>
+<% end %>
