@@ -40,6 +40,22 @@
   });
 
 
+   $("a#<%=taber %>_a").bind("ajax:complete", function(et, e){
+         $('tr').remove('.row-contents');
+         $('tr').remove('.next-button');
+        $("#<%=taber %>_table").append(e.responseText); // insert content
+        $("img#refresh_<%=taber %>").hide();
+        $('a.refresh_button').hide();
+        $("a#<%=taber %>_a").show();
+        $("span.<%=taber %>_span").show();
+        $('table.datTables').hide();
+
+        $("#<%=taber %>_table").show();
+
+  });
+
+
+
  <% end %>
 
   });
@@ -79,7 +95,7 @@
 <div class='tabContainer'>
 
     <% @tab_hash.each do |table,columns| %>
-    <a href="#" id='<%=table %>_a' class='refresh_button'>Refresh</a><span class='<%=table %>_span'></span>
+    <%= link_to "Refresh", "/dashboards/query/#{@dashboard.db_name}/#{table}/0", :id=>"#{table}_a",:remote=>true, :class=>'refresh_button' %><span class='<%=table %>_span'></span>
     <div id="vert_<%=table %>">
     <table id='<%=table %>_table' style="position:absolute;" class="datTables">
         <tr>
