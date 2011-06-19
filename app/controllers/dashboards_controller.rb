@@ -109,11 +109,29 @@ class DashboardsController < ApplicationController
 
   def query
     db= params[:db]
-    table= params[:table]
+    @table= params[:table]
+    @offset=params[:offset]
     @dashboard = current_user.dashboard
-    @db_tables=UserDatabase::ReadDb.new(@dashboard.db_name)
-    @out= @db_tables.show_data(table,100,0)
+    if @dashboard and @dashboard.db_name==@table
+      @db_tables=UserDatabase::ReadDb.new(@dashboard.db_name)
+      @row_count=@db_tables.get_data_count(@table)
+       @row_count.each do |count|
+      @rc=Integer( count.first)
+      end
+      @out= @db_tables.show_data(@table,50,@offset)
 
-    render :partial=> 'table'
-  end
+      if @rc >=50
+        @next=Integer(@offset)+50
+        @previous=Integer(@offset)-50
+      else
+        @next=0
+        @previous=0
+      end
+
+      render :partial=> 'table'
+    else
+      # render an error page
+       render :file => "../../public/404.html"sa
+    end
+end
 end

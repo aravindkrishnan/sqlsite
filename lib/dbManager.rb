@@ -38,6 +38,10 @@ module UserDatabase
       ActiveRecord::Base.connection.execute(sql)
     end
 
+    def get_data_count(table_name)
+      sql="SELECT COUNT(*) FROM #{@db_name}.#{table_name}"
+      ActiveRecord::Base.connection.execute(sql)
+    end
     def show_data(table_name,count,offset)
       sql="SELECT * FROM #{@db_name}.#{table_name} LIMIT #{offset},#{count}"
       ActiveRecord::Base.connection.execute(sql)

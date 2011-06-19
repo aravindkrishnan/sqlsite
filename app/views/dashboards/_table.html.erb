@@ -1,7 +1,40 @@
+<% content_for :custom_scripts do %>
+
+<% end %>
 <% @out.each do |rows| %>
-    <tr>
+    <tr class='row-contents'>
       <% rows.each do |row| %>
           <td><%= row %><td>
       <% end %>
     </tr>
+
 <% end %>
+<% if @rc >=50 and @next<=@rc %>
+        <tr class='next-button'>
+  <% if @next !=50 %>
+    <td><%= link_to '<< Previous',"/dashboards/query/#{@dashboard.db_name}/#{@table}/#{@previous}" ,:remote=>true,:class=>"table_name",:id=>"prev_#{@table}" %></td>
+    <td>|</td>
+  <% end %>
+    <td><%= link_to 'Next >>',"/dashboards/query/#{@dashboard.db_name}/#{@table}/#{@next}" ,:remote=>true,:class=>"table_name",:id=>"next_#{@table}" %></td>
+  </tr>
+<% elsif @rc>=50 and @next>@rc %>
+  <tr class='next-button'><td><%= link_to '<< Previous',"/dashboards/query/#{@dashboard.db_name}/#{@table}/#{@previous}" ,:remote=>true,:class=>"table_name",:id=>"prev_#{@table}" %></td></tr>
+<% end %>
+
+<script type="text/javascript">
+
+  $("a#next_<%=@table %>").bind("ajax:complete", function(et, e){
+       $('tr').remove('.row-contents');
+      $('tr').remove('.next-button');
+       $("#<%=@table %>_table").append(e.responseText); // insert content
+
+    });
+
+   $("a#prev_<%=@table %>").bind("ajax:complete", function(et, e){
+       $('tr').remove('.row-contents');
+      $('tr').remove('.next-button');
+       $("#<%=@table %>_table").append(e.responseText); // insert content
+
+    });
+
+</script>

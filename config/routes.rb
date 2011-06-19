@@ -7,7 +7,7 @@ Sqlsite::Application.routes.draw do
   match 'logout' => 'user_sessions#destroy', :as => :logout
 
 
-  match 'dashboards/query/:db/:table',:to=>'dashboards#query'
+  match 'dashboards/query/:db/:table/:offset',:to=>'dashboards#query'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
