@@ -112,7 +112,7 @@ class DashboardsController < ApplicationController
     @table= params[:table]
     @offset=params[:offset]
     @dashboard = current_user.dashboard
-    if @dashboard and @dashboard.db_name==@table
+    if @dashboard and @dashboard.db_name==db
       @db_tables=UserDatabase::ReadDb.new(@dashboard.db_name)
       @row_count=@db_tables.get_data_count(@table)
        @row_count.each do |count|
@@ -131,7 +131,7 @@ class DashboardsController < ApplicationController
       render :partial=> 'table'
     else
       # render an error page
-       render :file => "../../public/404.html"sa
+       render :file => "../../public/404.html"
     end
 end
 end
